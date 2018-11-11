@@ -37,7 +37,10 @@ def merge_data(orig_data, obscured_data, header, obscured_tag):
   merged_data.append(merged_header)
  
   for row_number, orig_row in enumerate(orig_data):
+  #for row_number, orig_row in zip(range(0, len(orig_data), 2), enumerate(orig_data)):
+    orig_row=orig_row
     obscured_row = obscured_data[row_number+1]
+    #obscured_row = obscured_data[row_number]
     merged_row = [None]*(len(orig_row)+len(obscured_row))
     merged_row[::2] = orig_row
     merged_row[1::2] = obscured_row

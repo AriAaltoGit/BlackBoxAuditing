@@ -36,12 +36,10 @@ class Auditor():
      in the same format as the training data, yields a confusion table detailing
      the correct and incorrect predictions of the model.
     """
-  
+
     all_data = train_set + test_set
-    model_factory = self.ModelFactory(all_data, headers, response_header,
-                                      features_to_ignore=features_to_ignore,
-                                      options=self.model_options)
-  
+    model_factory = NeuralNetwork.ModelFactory(all_data, headers, response_header, features_to_ignore=features_to_ignore, options=self.model_options)
+
     if not self.RETRAIN_MODEL_PER_REPAIR:
       vprint("Training initial model.",self.verbose)
       model = model_factory.build(train_set)
@@ -204,7 +202,7 @@ class Auditor():
     features_to_ignore = audits_data["ignore"]
     correct_types = audits_data["types"]
     obscured_tag = "-no"+removed_attr
-    
+
     # Create directory to dump results
     if not os.path.exists(output_dir):
       os.makedirs(output_dir)
@@ -220,7 +218,8 @@ class Auditor():
     obscured_test = []
     obscured_test_reader = csv.reader(open(obscured_test_data, 'r'))
     for row in obscured_test_reader:
-      obscured_test.append(row)
+      if row:
+        obscured_test.append(row)
 
     # load data from audit to prepare it for context finding process
     audit_params = (orig_train, orig_test, obscured_test, headers, response_header, features_to_ignore, correct_types, obscured_tag)
