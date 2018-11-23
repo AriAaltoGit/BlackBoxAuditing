@@ -38,7 +38,7 @@ class Auditor():
     """
 
     all_data = train_set + test_set
-    model_factory = NeuralNetwork.ModelFactory(all_data, headers, response_header, features_to_ignore=features_to_ignore, options=self.model_options)
+    model_factory = self.ModelFactory(all_data, headers, response_header, features_to_ignore=features_to_ignore, options=self.model_options)
 
     if not self.RETRAIN_MODEL_PER_REPAIR:
       vprint("Training initial model.",self.verbose)
@@ -65,7 +65,9 @@ class Auditor():
       model_or_factory = model
     else:
       model_or_factory = model_factory
-  
+    
+    exit(0)
+
     # Translate the headers into indexes for the auditor.
     audit_indices_to_ignore = [headers.index(f) for f in features_to_ignore]
 

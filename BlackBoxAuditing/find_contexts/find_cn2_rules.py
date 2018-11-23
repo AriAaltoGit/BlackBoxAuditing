@@ -1,14 +1,14 @@
-import Orange
+import orange
 import os,csv
 
 def CN2_learner(trainfile, testfile, output_dir, beam_width, min_covered_examples, max_rule_length, influence_scores):
   print("Setting up CN2 Learner")
   # format data for classification
-  training_data = Orange.data.Table.from_file(trainfile)
+  training_data = orange.data.Table.from_file(trainfile)
   # set the learner
-  learner = Orange.classification.rules.CN2Learner()
+  learner = orange.classification.rules.CN2Learner()
   # set the rule evaluator to be Laplace
-  LaplaceEvaluator = Orange.classification.rules.LaplaceAccuracyEvaluator()
+  LaplaceEvaluator = orange.classification.rules.LaplaceAccuracyEvaluator()
   learner.rule_finder.quality_evaluator = LaplaceEvaluator
   # set the number of solution steams considered at one time
   learner.rule_finder.search_algorithm.beam_width = beam_width
@@ -39,8 +39,8 @@ def CN2_learner(trainfile, testfile, output_dir, beam_width, min_covered_example
       rules.writerow([rule_num, str(rule).strip(' '), rule.quality, score])
 
   print("Evaluating Model")
-  test_data = Orange.data.Table.from_file(testfile)
-  res = Orange.evaluation.TestOnTestData(training_data, test_data, [learner])
-  accuracy = Orange.evaluation.scoring.CA(res)
-  AUC = Orange.evaluation.scoring.AUC(res)
+  test_data = orange.data.Table.from_file(testfile)
+  res = orange.evaluation.TestOnTestData(training_data, test_data, [learner])
+  accuracy = orange.evaluation.scoring.CA(res)
+  AUC = orange.evaluation.scoring.AUC(res)
   return rulesfile, accuracy, AUC

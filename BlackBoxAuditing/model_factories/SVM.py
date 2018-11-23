@@ -39,7 +39,6 @@ class ModelFactory(AbstractModelFactory):
         super(ModelFactory, self).__init__(*args, **kwargs)
         self.verbose_factory_name = "DecisionTree"
 
-
         # Maps each header to the values for it's column.
         self.col_vals = {header:{row[i] for row in self.all_data} for i, header in enumerate(self.headers)}
         self.response_index = self.headers.index(self.response_header)
@@ -94,9 +93,16 @@ class ModelFactory(AbstractModelFactory):
                 random_state=self.random_state
                 ) 
 
+        #np.savetxt('adult_train_SVM_matrix.csv', train_matrix)
+        #np.savetxt('adult_train_SVM_outcomes.csv', train_outcomes)
+        print(clf)
         clf.fit(train_matrix, train_outcomes)
         model_name = "SVM_Model"
+        print(clf.get_params(deep=True))
+        # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC
+        # https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf
 
+        
         return(ModelVisitor(clf, model_name, self.response_header, self.response_index, self.adjusted_response_index, self.num_outcomes, self.outcome_trans_dict, self.headers, self.expanded_headers, self.standardizers, self.col_vals, self.feats_to_ignore, self.columns_to_expand))
 
 
@@ -125,11 +131,16 @@ class ModelVisitor(AbstractModelVisitor):
     else:
       test_matrix, test_labels = list_to_tf_input(expanded_and_stdized_test_set, self.adjusted_response_index, self.num_outcomes)
 
-   
+    np.savetxt('adult_test_matrix.csv', test_matrix)
+    np.savetxt('adult_test_labels.csv', test_labels)
+
     predictions = self.clf.predict(test_matrix)
     predictions, test_labels = predictions.tolist(), test_labels.tolist() # cast from numpy array to python list
     #test_labels = [(corr[0], corr[1]) for corr in test_labels]
     #predictions = [row.index(1) for row in predictions]
+
+    np.savetxt('adult_test_predictions.csv', predictions)
+
     predictions_dict = {i:key for key,i in list(self.outcome_trans_dict.items())}
     predictions = [predictions_dict[pred] for pred in predictions]
     return list(zip([row[self.response_index] for row in test_set], predictions))

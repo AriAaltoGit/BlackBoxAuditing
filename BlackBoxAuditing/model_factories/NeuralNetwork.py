@@ -49,9 +49,11 @@ class ModelFactory(AbstractModelFactory):
         self.verbose_factory_name = "DecisionTree"
 
         # Maps each header to the values for it's column.
-        self.col_vals = {header: {row[i] for row in self.all_data} for i, header in enumerate(self.headers)}
-        self.response_index = self.headers.index(self.response_header)
+        self.col_vals = {header: {row[i] for row in self.all_data} for i, 
+        header in enumerate(self.headers)}        
+        self.response_index = self.headers.index(self.response_header)        
         self.num_outcomes = len(self.col_vals[self.response_header])
+        #print("num_outcomes: " + str(self.num_outcomes))
 
         # Mark any categorical features for column expansion.
         # Categorical features are transfered into -1, 1 binary features for each value.
@@ -99,6 +101,17 @@ class ModelFactory(AbstractModelFactory):
         train_matrix, train_outcomes = list_to_tf_input(expanded_and_stdized_train_set, self.adjusted_response_index,
                                                         self.num_outcomes)
         train_size, num_features = train_matrix.shape
+        # Mod:
+        #import numpy as np
+        
+        #np.savetxt('adult_train_matrix.csv', train_matrix)
+        #np.savetxt('adult_train_outcomes.csv', train_outcomes)
+        #variable = np.loadtxt('fname.csv', delimiter=',')
+        
+        print("trainin_set: " + str(train_set[0:10]))
+       # print("train_matrix: " + str(train_matrix))
+       # print("train_outcomes: " + str(train_outcomes))
+        exit(0)
 
         clf = neural_network.MLPClassifier(
             hidden_layer_sizes=self.hidden_layer_sizes, \
@@ -183,15 +196,17 @@ def list_to_tf_input(data, response_index, num_outcomes):
     matrix = np.matrix([row[:response_index] + row[response_index + 1:] for row in data])
     outcomes = np.asarray([row[response_index] for row in data], dtype=np.uint8)
     outcomes_onehot = (np.arange(num_outcomes) == outcomes[:, None]).astype(np.float32)
-
+    print("list_to_tf_input: " + str(np.arange(num_outcomes)))
+    print("list_to_tf_input: " + str(outcomes[:, None]))
+    print("list_to_tf_input: " + str(outcomes))
     return matrix, outcomes_onehot
 
 
-def expand_and_standardize_dataset(response_index, response_header, data_set, col_vals, headers, standardizers,
-                                   feats_to_ignore, columns_to_expand, outcome_trans_dict):
+def expand_and_standardize_dataset(response_index, response_header, data_set, col_vals, headers, standardizers,feats_to_ignore, columns_to_expand, outcome_trans_dict):
     """
     Standardizes continuous features and expands categorical features.
     """
+    #print("col_vals: " + str(col_vals))
     # expand and standardize
     modified_set = []
     for row_index, row in enumerate(data_set):
@@ -221,7 +236,7 @@ def expand_and_standardize_dataset(response_index, response_header, data_set, co
             else:
                 new_cont_val = float((val - standardizers[header]['mean']) / standardizers[header]['std_dev'])
                 new_row.append(new_cont_val)
-
+        #print("new_row: " + str(new_row))
         modified_set.append(new_row)
 
     # update headers to reflect column expansion
