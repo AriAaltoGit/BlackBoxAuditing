@@ -11,7 +11,7 @@ class ModelFactory(AbstractModelFactory):
         self.C=1.0
         self.kernel="rbf"
         self.degree=3
-        self.gamma="auto"
+        self.gamma=3 #"auto"
         self.cache_size=200
         self.class_weight=None
         self.random_state = 123
@@ -93,8 +93,8 @@ class ModelFactory(AbstractModelFactory):
                 random_state=self.random_state
                 ) 
 
-        #np.savetxt('adult_train_SVM_matrix.csv', train_matrix)
-        #np.savetxt('adult_train_SVM_outcomes.csv', train_outcomes)
+        np.savetxt('adult_train_SVM_matrix.csv', train_matrix)
+        np.savetxt('adult_train_SVM_outcomes.csv', train_outcomes)
         print(clf)
         clf.fit(train_matrix, train_outcomes)
         model_name = "SVM_Model"
@@ -143,6 +143,7 @@ class ModelVisitor(AbstractModelVisitor):
 
     predictions_dict = {i:key for key,i in list(self.outcome_trans_dict.items())}
     predictions = [predictions_dict[pred] for pred in predictions]
+    
     return list(zip([row[self.response_index] for row in test_set], predictions))
 
 
@@ -156,6 +157,9 @@ def list_to_tf_input(data, response_index, num_outcomes):
   return matrix, outcomes
 
 def expand_and_standardize_dataset(response_index, response_header, data_set, col_vals, headers, standardizers, feats_to_ignore, columns_to_expand, outcome_trans_dict):
+  #print(col_vals)
+  #print("----------------")
+  #print(columns_to_expand)
   """
   Standardizes continuous features and expands categorical features.
   """
@@ -181,7 +185,7 @@ def expand_and_standardize_dataset(response_index, response_header, data_set, co
           if val == poss_val:
             new_cat_val = 1.0
           else:
-            new_cat_val = -1.0
+            new_cat_val = -0 #1.0
           new_row.append(new_cat_val)
 
       # Continuous feature -> standardize value with respect to its column

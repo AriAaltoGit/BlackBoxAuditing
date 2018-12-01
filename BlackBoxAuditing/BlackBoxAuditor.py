@@ -66,6 +66,11 @@ class Auditor():
     else:
       model_or_factory = model_factory
     
+    # Save model
+    import pickle
+    with open('BBA_model', 'wb') as model_file:
+      pickle.dump(model_or_factory.clf, model_file)
+
     exit(0)
 
     # Translate the headers into indexes for the auditor.
